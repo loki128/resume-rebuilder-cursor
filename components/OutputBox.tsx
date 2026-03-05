@@ -37,15 +37,22 @@ export default function OutputBox({ data }: { data: any }) {
         </div>
       )}
 
-      {/* Rewritten Bullets */}
-      {data.rewrittenBullets && data.rewrittenBullets.length > 0 && (
+      {/* Rewritten Bullets grouped by section */}
+      {data.rewrittenBullets && (
         <div>
           <h3 className="font-semibold">Rewritten Bullets</h3>
-          <ul className="list-disc list-inside space-y-1 mt-2">
-            {data.rewrittenBullets.map((bullet: string, i: number) => (
-              <li key={i} className="text-sm text-gray-700">{bullet}</li>
+          <div className="mt-2 space-y-3">
+            {Object.entries(data.rewrittenBullets).map(([section, bullets]: [string, any]) => (
+              <div key={section}>
+                <div className="text-sm font-medium text-gray-600">{section}</div>
+                <ul className="list-disc list-inside space-y-1 mt-1">
+                  {Array.isArray(bullets) && bullets.map((b: string, i: number) => (
+                    <li key={i} className="text-sm text-gray-700">{b}</li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       )}
 
@@ -94,20 +101,30 @@ export default function OutputBox({ data }: { data: any }) {
         </div>
       )}
 
-      {/* Debug Meta Info */}
-      {data.meta && (
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <details className="text-xs text-gray-500">
-            <summary className="cursor-pointer hover:text-gray-700">Debug Info</summary>
-            <div className="mt-2 space-y-1 pl-4">
-              <div>Job Title: {data.meta.jobTitle}</div>
-              <div>Description: {data.meta.jobDescription}</div>
-              <div>Resume: {data.meta.resumeText}</div>
-              <div>Strict Mode: {data.meta.strictTruthMode ? "Yes" : "No"}</div>
-            </div>
-          </details>
+      {/* Optional placeholders when not strict */}
+      {data.optionalPlaceholders && data.optionalPlaceholders.length > 0 && (
+        <div className="bg-gray-50 border border-gray-200 rounded p-3">
+          <div className="font-semibold text-gray-700">Optional Placeholders (when strict mode is off)</div>
+          <ul className="list-disc list-inside text-sm text-gray-700 mt-1">
+            {data.optionalPlaceholders.map((p: string, i: number) => (
+              <li key={i}>{p}</li>
+            ))}
+          </ul>
         </div>
       )}
+
+      {/* Rules Report */}
+      {data.rulesReport && data.rulesReport.length > 0 && (
+        <div className="mt-4">
+          <h3 className="font-semibold">Rules Applied</h3>
+          <ul className="list-disc list-inside text-sm text-gray-700 mt-1">
+            {data.rulesReport.map((r: string, i: number) => (
+              <li key={i}>{r}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
     </div>
   );
 }
