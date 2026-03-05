@@ -1,12 +1,25 @@
 import React from "react";
 
-export default function EnhanceButton({ onClick }: { onClick: () => void }) {
+interface EnhanceButtonProps {
+  onClick: () => void;
+  disabled?: boolean;
+}
+
+export default function EnhanceButton({
+  onClick,
+  disabled = false,
+}: EnhanceButtonProps) {
   return (
     <button
       onClick={onClick}
-      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow"
+      disabled={disabled}
+      className={`px-4 py-2 rounded shadow text-white font-medium transition-colors ${
+        disabled
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800"
+      }`}
     >
-      Enhance Resume
+      {disabled ? "Processing..." : "Enhance Resume"}
     </button>
   );
 }
