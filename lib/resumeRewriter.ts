@@ -20,8 +20,10 @@ type RewriteOutput = {
 };
 
 const ACTION_VERBS = [
-  "Led","Owned","Delivered","Optimized","Streamlined","Implemented","Built","Deployed","Improved","Automated","Resolved","Designed","Architected","Analyzed","Collaborated","Coordinated","Enhanced","Launched","Maintained","Refactored","Reduced","Increased","Standardized","Migrated","Integrated"
+  "led","owned","delivered","optimized","streamlined","implemented","built","deployed","improved","automated","resolved","designed","architected","analyzed","collaborated","coordinated","enhanced","launched","maintained","refactored","reduced","increased","standardized","migrated","integrated","developed","created","managed","tested","validated","documented","configured","orchestrated","monitored","supported","debugged","fixed","reviewed","planned","executed"
 ];
+
+const VERB_SET = new Set(ACTION_VERBS);
 
 const WEAK_STARTERS = [/^responsible for\s*/i,/^worked on\s*/i,/^helped\s*/i,/^assisted\s*/i,/^involved in\s*/i,/^tasked with\s*/i,/^participated in\s*/i];
 
@@ -30,7 +32,7 @@ const STOP_WORDS = new Set(["the","and","for","with","from","that","this","into"
 function normalize(text: string): string { return (text || "").replace(/\s+/g, " ").trim(); }
 function tokenize(text: string): string[] { return (text||"").toLowerCase().replace(/[^a-z0-9+.#\s]/g," ").split(/\s+/).filter(w=>w && !STOP_WORDS.has(w)); }
 function unique<T>(arr:T[]):T[] { return Array.from(new Set(arr)); }
-function pickVerb(i:number){ return ACTION_VERBS[i % ACTION_VERBS.length]; }
+function startsWithVerb(s:string){ const w=(s.trim().match(/^([A-Za-z]+)/)?.[1]||"").toLowerCase(); return VERB_SET.has(w); }
 
 function extractTopKeywords(jobTitle?:string, jobDescription?:string){
   const text = `${jobTitle || ""} ${jobDescription || ""}`.toLowerCase();
@@ -71,14 +73,14 @@ function limit25Words(s:string){
 }
 
 function rewriteBullet(raw:string, idx:number, strictTruthMode:boolean){
-  const verb = pickVerb(idx);
-  const stripped = removeWeakStarters(raw.replace(/^[-•]\s*/, ""));
+  let base = removeWeakStarters(raw.replace(/^[-•]\s*/, "")).trim();
+  if (!base) return "";
 
-  // Add specificity by reusing nouns already present in the bullet
-  const nouns = reuseExistingNouns(stripped);
+  // If bullet already starts with a strong verb, keep it and avoid adding another
+  const alreadyStartsWithVerb = startsWithVerb(base);
 
-  // Convert vague phrases into more concrete forms without adding facts
-  let improved = stripped
+  // Normalize vague wording without adding new facts
+  base = base
     .replace(/\butilized\b/gi, "used")
     .replace(/\bleveraged\b/gi, "used")
     .replace(/\bthings?\b/gi, "deliverables")
@@ -89,34 +91,68 @@ function rewriteBullet(raw:string, idx:number, strictTruthMode:boolean){
     .replace(/\bhelp(ed)?\b/gi, "supported")
     .trim();
 
-  // Scope + Method + Outcome (heuristic assembly from existing nouns)
-  const scope = nouns.slice(0,2).join(", ");
-  const method = nouns.slice(2,4).join(", ");
-  const outcome = nouns.slice(4,6).join(", ");
+  // Build components: ActionVerb + WhatWasBuilt + PurposeOrImpact
+  const nouns = reuseExistingNouns(base);
+  const what = base; // keep original content (clarified), don't invent
+  const purpose = nouns.slice(0,2).join(", ");
 
-  const pieces = [verb, improved];
-  if (scope) pieces.push(`for ${scope}`);
-  if (method) pieces.push(`using ${method}`);
-  if (outcome) pieces.push(`to improve ${outcome}`);
-
-  let sentence = pieces.join(" ").replace(/\s+/g," ").trim();
-
-  // Enforce strict truth: do not add numbers
-  const hasNumber = /\d/.test(sentence);
-  if (strictTruthMode && hasNumber){
-    // keep as-is (came from resume), do nothing
+  let sentence = "";
+  if (alreadyStartsWithVerb) {
+    // Keep single leading verb, ensure grammar
+    sentence = what;
+  } else {
+    const verb = pickVerb(idx);
+    sentence = `${verb} ${what}`;
   }
 
-  sentence = limit25Words(sentence);
-  return sentence;
+  if (purpose) {
+    // add a light purpose clause using existing nouns only
+    sentence = `${sentence} to improve ${purpose}`.replace(/\s+/g, " ");
+  }
+
+  // Strict truth: do not add numbers; if numbers already exist, keep them
+  if (strictTruthMode) {
+    // no-op; we never inject metrics in this path
+  }
+
+  return limit25Words(sentence).replace(/[.;,:\s]+$/,'').trim();
 }
 
-function extractSkillsFromJD(jobDescription?:string){
-  const hints = ["javascript","typescript","react","next.js","nextjs","node","python","java","graphql","sql","excel","google sheets","aws","gcp","azure","docker","kubernetes","tailwind","git","ci/cd","jest","playwright","cypress","html","css","redux","vite","webpack","rest","api","microservices","postgres","mongodb","redis","linux","bash"];
+function extractSkills(jobDescription?:string, resumeText?:string){
+  // Categories per requirement
+  const CATS: Record<string,string[]> = {
+    Languages: ["javascript","typescript","python","java","c#","go","ruby","php","sql"],
+    Frameworks: ["react","next.js","nextjs","node","express","django","flask","spring","redux","vite","webpack","jest","playwright","cypress"],
+    Tools: ["git","docker","kubernetes","webpack","babel","eslint","prettier","excel","google sheets"],
+    Platforms: ["aws","gcp","azure","linux","macos","windows"],
+    Concepts: ["graphql","rest","microservices","ci/cd","tdd","oop","functional","design patterns"],
+  };
   const jd = (jobDescription||"").toLowerCase();
-  const tech = unique(hints.filter(h=> jd.includes(h))).map(s=> s.replace(/\bnextjs\b/,"next.js"));
-  const tools = unique(tech.filter(s=> ["excel","google sheets","git","docker","kubernetes"].includes(s)));
-  return { Technical: tech.slice(0,20), Tools: tools.slice(0,20) };
+  const res = (resumeText||"").toLowerCase();
+
+  const clean = (s:string)=> s.replace(/\bnextjs\b/,"next.js").replace(/\bci\/cd\b/,'CI/CD');
+
+  const out: Record<keyof typeof CATS, string[]> = {
+    Languages: [], Frameworks: [], Tools: [], Platforms: [], Concepts: []
+  } as any;
+
+  (Object.keys(CATS) as (keyof typeof CATS)[]).forEach((k) => {
+    const values = CATS[k]
+      .filter(v => jd.includes(v) || res.includes(v))
+      .filter((v, i, a) => a.indexOf(v) === i)
+      .map(clean)
+      .filter(Boolean);
+    // Only keep skills present in the resume text to avoid invention
+    out[k] = values.filter(v => res.includes(v.toLowerCase()));
+  });
+
+  // Remove duplicates across categories while preserving category priority order
+  const seen = new Set<string>();
+  (Object.keys(out) as (keyof typeof out)[]).forEach((k) => {
+    out[k] = out[k].filter(s => { const key=s.toLowerCase(); if (seen.has(key)) return false; seen.add(key); return true; });
+  });
+
+  return out;
 }
 
 export async function rewriteResume({ jobTitle, jobDescription, resumeText, strictTruthMode = true }: RewriteArgs): Promise<RewriteOutput> {
@@ -125,13 +161,13 @@ export async function rewriteResume({ jobTitle, jobDescription, resumeText, stri
   // Build keywords report (frequency + role relevance heuristic)
   const keywordsReport = buildKeywordsReport(jobDescription, resumeText);
 
-  // Skills: never invent new ones — intersect JD hints with resumeText tokens
-  const jdSkills = extractSkillsFromJD(jobDescription);
-  const resumeLower = (resumeText||"").toLowerCase();
-  const skills = {
-    Technical: jdSkills.Technical.filter(s=> resumeLower.includes(s.toLowerCase())),
-    Tools: jdSkills.Tools.filter(s=> resumeLower.includes(s.toLowerCase())),
+  // Skills: group and list cleanly without rewriting into sentences; never invent
+  const groupedSkills = extractSkills(jobDescription, resumeText);
+  const skills = { // maintain old shape for UI compatibility and provide richer categories in skillsSections
+    Technical: [...groupedSkills.Languages, ...groupedSkills.Frameworks].slice(0, 20),
+    Tools: [...groupedSkills.Tools, ...groupedSkills.Platforms, ...groupedSkills.Concepts].slice(0, 20),
   };
+
 
   // Core competencies: rank from JD tokens with simple heuristics
   const coreCompetencies = unique(extractTopKeywords(jobTitle, jobDescription))
@@ -176,7 +212,8 @@ export async function rewriteResume({ jobTitle, jobDescription, resumeText, stri
     summary,
     coreCompetencies,
     rewrittenBullets,
-    skillsSections: skills,
+    // Provide richer categories as skillsSections while keeping 'skills' alias for compatibility
+    skillsSections: groupedSkills as any,
     skills,
     keywordsReport,
     rulesReport,
