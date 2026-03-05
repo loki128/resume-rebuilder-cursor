@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { rewriteResume } from "@/lib/resumeRewriter";
 
 export async function POST(req: Request) {
   try {
-    // Parse request body
+    // Parse request body safely
     let body: any = {};
     try {
       body = await req.json();
@@ -13,41 +14,22 @@ export async function POST(req: Request) {
       );
     }
 
-    // Extract fields (safely handle empty/missing values)
+    // Extract fields with defaults
     const jobTitle = body?.jobTitle || "";
     const jobDescription = body?.jobDescription || "";
     const resumeText = body?.resumeText || "";
     const strictTruthMode = body?.strictTruthMode !== false; // default true
 
-    // Always return working placeholder response
-    const response = {
-      summary: "This is a placeholder summary",
-      coreCompetencies: ["Communication", "Teamwork", "Problem Solving"],
-      rewrittenBullets: [
-        "Improved reporting workflows by organizing spreadsheet data",
-        "Collaborated with team members to support operational tasks",
-      ],
-      skills: {
-        Technical: ["Excel", "Data Entry"],
-        Tools: ["Google Sheets"],
-      },
-      keywordsReport: {
-        keywordsDetected: ["analysis", "reporting", "operations"],
-        keywordsUsed: ["analysis"],
-        keywordsMissing: ["automation"],
-      },
-      // Include metadata for debugging
-      meta: {
-        jobTitle: jobTitle || "[empty]",
-        jobDescription: jobDescription ? `${jobDescription.slice(0, 50)}...` : "[empty]",
-        resumeText: resumeText ? `${resumeText.slice(0, 50)}...` : "[empty]",
-        strictTruthMode,
-      },
-    };
+    // Call the real rewriting engine
+    const result = await rewriteResume({
+      jobTitle,
+      jobDescription,
+      resumeText,
+      strictTruthMode,
+    });
 
-    return NextResponse.json(response, { status: 200 });
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    // Handle any unexpected errors
     console.error("Error in /api/enhance:", error);
     return NextResponse.json(
       {
