@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
+import { EnhanceRequest, EnhanceResponse } from "@/lib/types";
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  const body: EnhanceRequest = await request.json();
   const { jobTitle, jobDescription, resumeText, strictTruthMode } = body;
 
   // Placeholder response — AI logic not implemented yet
-  const response = {
+  const response: EnhanceResponse = {
     summaryBullets: [
       `Tailored summary for ${jobTitle || "[Job Title]"}`,
       "Focused on relevant achievements and metrics",
