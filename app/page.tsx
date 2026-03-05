@@ -14,38 +14,26 @@ export default function Home() {
   const [results, setResults] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleEnhance = async () => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault(); // prevent page refresh
     setResults(null);
     setLoading(true);
 
     try {
-      const res = await fetch("/api/enhance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jobTitle,
-          jobDescription,
-          resumeText,
-          strictTruthMode,
-        }),
+      const res = await fetch('/api/enhance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobTitle, jobDescription, resumeText, strictTruthMode }),
       });
 
       if (!res.ok) {
-        setResults({
-          error: `API error: ${res.status} ${res.statusText}`,
-        });
-        return;
+        setResults({ error: `API error: ${res.status} ${res.statusText}` });
+      } else {
+        const data = await res.json();
+        setResults(data);
       }
-
-      const data = await res.json();
-      setResults(data);
     } catch (err) {
-      console.error("Error:", err);
-      setResults({
-        error: "Failed to connect to API",
-        message:
-          err instanceof Error ? err.message : "Unknown error occurred",
-      });
+      setResults({ error: 'Failed to call API', message: err instanceof Error ? err.message : 'Unknown error' });
     } finally {
       setLoading(false);
     }
@@ -61,25 +49,10 @@ export default function Home() {
 
         <SectionTabs />
 
-        <div className="space-y-4">
-          <InputBox
-            label="Job Title"
-            value={jobTitle}
-            onChange={setJobTitle}
-            rows={1}
-          />
-          <InputBox
-            label="Job Description"
-            value={jobDescription}
-            onChange={setJobDescription}
-            rows={4}
-          />
-          <InputBox
-            label="Resume Text"
-            value={resumeText}
-            onChange={setResumeText}
-            rows={6}
-          />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <InputBox label="Job Title" value={jobTitle} onChange={setJobTitle} rows={1} />
+          <InputBox label="Job Description" value={jobDescription} onChange={setJobDescription} rows={4} />
+          <InputBox label="Resume Text" value={resumeText} onChange={setResumeText} rows={6} />
 
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2">
@@ -92,14 +65,12 @@ export default function Home() {
               <span className="text-sm">Strict Truth Mode</span>
             </label>
 
-            <EnhanceButton onClick={handleEnhance} disabled={loading} />
+            <EnhanceButton type="submit" disabled={loading} />
           </div>
-        </div>
+        </form>
 
         <div className="mt-8">
-          <h2 className="text-lg font-medium mb-3">
-            {loading ? "Processing..." : "Results"}
-          </h2>
+          <h2 className="text-lg font-medium mb-3">{loading ? 'Processing...' : 'Results'}</h2>
           <OutputBox data={results} />
         </div>
       </div>
