@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 interface Props {
@@ -5,18 +6,38 @@ interface Props {
   value: string;
   onChange: (v: string) => void;
   rows?: number;
+  placeholder?: string;
+  hint?: string;
 }
 
-export default function InputBox({ label, value, onChange, rows = 3 }: Props) {
+export default function InputBox({ label, value, onChange, rows = 3, placeholder, hint }: Props) {
   return (
-    <label className="block">
-      <span className="text-sm font-medium text-gray-700">{label}</span>
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <label className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
+          {label}
+        </label>
+        {value.length > 0 && (
+          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            {value.length} chars
+          </span>
+        )}
+      </div>
       <textarea
         rows={rows}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-200 p-3"
+        placeholder={placeholder}
+        className="w-full rounded-xl p-4 text-sm leading-relaxed"
+        style={{
+          background: 'var(--bg-elevated)',
+          border: '1px solid var(--border)',
+          color: 'var(--text-primary)',
+        }}
       />
-    </label>
+      {hint && (
+        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{hint}</p>
+      )}
+    </div>
   );
 }
