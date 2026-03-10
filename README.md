@@ -1,209 +1,205 @@
-# resume-ai-enhancer
+<div align="center">
 
-An AI-powered resume rewriting tool that tailors your resume to match specific job descriptions **without inventing facts**. Built with Next.js 14, TypeScript, and Tailwind CSS.
+# ResumeAI — Match. Rewrite. Ship.
 
-## Overview
+**AI-powered resume enhancer that rewrites your resume to match job descriptions — without fabricating a single fact.**
 
-`resume-ai-enhancer` helps job seekers optimize their existing resumes by:
-- Extracting keywords from job descriptions
-- Highlighting relevant skills and achievements
-- Suggesting resume improvements while maintaining truthfulness
-- Providing a keyword match report (matched/missing)
-- Offering a Strict Truth Mode to ensure no fabrications
+[![Next.js](https://img.shields.io/badge/Next.js_14-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Vercel](https://img.shields.io/badge/Deployed_on_Vercel-black?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
+[![OpenRouter](https://img.shields.io/badge/OpenRouter_LLM-6366f1?style=for-the-badge&logo=openai&logoColor=white)](https://openrouter.ai)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+
+[**Live Demo**](https://resume-rebuilder-cursor.vercel.app) · [**Experimental Repo**](https://github.com/loki128/resume-rebuilder-experimental) · [**Report Bug**](https://github.com/loki128/resume-rebuilder-cursor/issues)
+
+</div>
+
+---
+
+## The Problem
+
+Job seekers spend hours manually tweaking resumes for each application — reordering bullets, swapping keywords, guessing what recruiters want. Most AI tools either hallucinate qualifications or give generic advice that doesn't reflect real experience.
+
+**ResumeAI solves this.** It reads your resume and the job description, then surgically rewrites your bullets, surfaces your most relevant skills, and tells you exactly which keywords you're missing — all while keeping your real experience intact.
+
+---
+
+## Live Demo
+
+Paste any job description + your resume text and get an AI-enhanced version in seconds.
+
+**[resume-rebuilder-cursor.vercel.app](https://resume-rebuilder-cursor.vercel.app)**
+
+---
+
+## Features
+
+| Feature | Description |
+|---|---|
+| **Smart Keyword Extraction** | Pulls exact keywords from the job description using NLP |
+| **Bullet Rewriting** | Rewrites your experience bullets to align with the role using only what you have actually done |
+| **Strict Truth Mode** | Locks the AI to your real experience — zero fabrication |
+| **Match Score** | Visual percentage showing how well your resume aligns with the job |
+| **Skills Mapping** | Categorizes and surfaces your skills by relevance to the role |
+| **Keywords Report** | Shows exactly which keywords were used, detected, and missing |
+| **Copy to Clipboard** | One-click copy on every output section |
+| **LLM Fallback** | Rule-based engine kicks in if LLM is unavailable — always returns results |
+
+---
 
 ## Tech Stack
 
-- **Framework:** Next.js 14 (App Router)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **API:** REST API endpoints in `/api/enhance`
+```
+Frontend        Next.js 14 (App Router) + TypeScript + Tailwind CSS
+Animation       Framer Motion
+Icons           Lucide React
+AI Engine       OpenRouter API (LLM) with rule-based fallback
+Deployment      Vercel (auto-deploy on push)
+Styling System  Custom dark design system with CSS variables
+```
+
+---
 
 ## Project Structure
 
 ```
-resume-ai-enhancer/
+resume-rebuilder/
 ├── app/
-│   ├── page.tsx              # Homepage with UI form
-│   ├── layout.tsx            # Root layout
-│   ├── globals.css           # Global Tailwind styles
+│   ├── page.tsx              # Main UI — two-column split layout
+│   ├── layout.tsx            # Root layout + metadata
+│   ├── globals.css           # Dark design system (CSS vars, glass, glow)
 │   └── api/
 │       └── enhance/
-│           └── route.ts      # POST endpoint for resume enhancement
+│           └── route.ts      # POST /api/enhance — AI processing endpoint
 ├── components/
-│   ├── InputBox.tsx          # Textarea input wrapper
-│   ├── OutputBox.tsx         # Results display
-│   ├── EnhanceButton.tsx     # Main CTA button
-│   └── SectionTabs.tsx       # Tab navigation
-├── lib/
-│   ├── keywordExtractor.ts   # Keyword extraction logic
-│   └── resumeRewriter.ts     # Resume rewriting logic
-├── package.json
-├── tsconfig.json
-├── tailwind.config.ts
-├── postcss.config.js
-├── next.config.js
-└── README.md
+│   ├── InputBox.tsx          # Textarea with char count + hints
+│   ├── OutputBox.tsx         # Animated result cards with copy buttons
+│   ├── EnhanceButton.tsx     # Gradient CTA with loading state
+│   └── SectionTabs.tsx       # Spring-animated tab switcher
+└── lib/
+    ├── keywordExtractor.ts   # NLP keyword extraction from JD
+    ├── resumeRewriter.ts     # Core rewriting orchestrator
+    ├── openRouterRewriter.ts # LLM integration (OpenRouter)
+    ├── ollamaRewriter.ts     # Local LLM fallback (Ollama)
+    ├── llmPrompt.ts          # Prompt engineering
+    ├── parseResume.ts        # Resume section parser
+    └── types.ts              # Shared TypeScript interfaces
 ```
 
-## Features
-
-### Current (Foundation)
-- ✅ Clean minimal UI with three text inputs
-  - Job Title
-  - Job Description
-  - Resume Text
-- ✅ Toggle for "Strict Truth Mode" (default: enabled)
-- ✅ "Enhance Resume" button with POST request to `/api/enhance`
-- ✅ Placeholder API response with structure:
-  - Summary bullets
-  - Skills list
-  - Keywords report (matched/missing)
-- ✅ Results section displaying API output
-
-### Upcoming
-- [ ] AI-powered resume rewriting using LLM API
-- [ ] Keyword extraction and matching algorithm
-- [ ] Factuality validation in Strict Truth Mode
-- [ ] Resume section prioritization
-- [ ] Downloadable enhanced resume (PDF/DOCX)
-- [ ] Resume upload support
-- [ ] Multiple job comparison
-
-## Getting Started
-
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-
-### Installation
-
-```bash
-# Clone the repository (or create new Next.js project)
-git clone <repo-url>
-cd resume-ai-enhancer
-
-# Install dependencies
-npm install
-```
-
-### Development
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-### Build & Deploy
-
-```bash
-npm run build
-npm start
-```
+---
 
 ## API Reference
 
 ### POST `/api/enhance`
 
-Submits resume and job description for enhancement.
-
 **Request:**
 ```json
 {
-  "jobTitle": "Senior Full Stack Engineer",
-  "jobDescription": "We're looking for a full stack engineer...",
-  "resumeText": "John Doe\nExperienced software engineer...",
+  "jobTitle": "Senior Product Manager",
+  "jobDescription": "We are looking for a PM to lead...",
+  "resumeText": "Jane Doe — 5 years experience in...",
   "strictTruthMode": true
 }
 ```
 
-**Response (Placeholder):**
+**Response:**
 ```json
 {
-  "summaryBullets": [
-    "Tailored summary for Senior Full Stack Engineer",
-    "Focused on relevant achievements and metrics"
-  ],
-  "skills": ["JavaScript", "TypeScript", "React", "Next.js"],
-  "keywordsReport": {
-    "matchedKeywords": ["react", "next.js"],
-    "missingKeywords": ["graphql"]
+  "summary": "Product leader with 5 years driving 0-to-1 features...",
+  "coreCompetencies": ["Product Strategy", "Roadmapping", "A/B Testing"],
+  "rewrittenBullets": {
+    "Experience": [
+      "Led cross-functional team of 8 to ship payments feature, reducing checkout drop-off by 23%"
+    ]
   },
-  "meta": {
-    "jobTitle": "Senior Full Stack Engineer",
-    "strictTruthMode": true
+  "skills": {
+    "Technical": ["SQL", "Figma", "JIRA"],
+    "Leadership": ["Stakeholder Management", "OKR Setting"]
+  },
+  "keywordsReport": {
+    "keywordsDetected": ["agile", "roadmap", "stakeholder"],
+    "keywordsUsed": ["agile", "roadmap"],
+    "keywordsMissing": ["stakeholder"]
+  },
+  "llmUsed": true,
+  "parsedMeta": {
+    "bulletsCount": 12,
+    "sectionsDetected": ["Experience", "Skills", "Education"]
   }
 }
 ```
 
-## Component Guide
+---
 
-### InputBox
-Reusable textarea component with label and customizable rows.
+## Running Locally
 
-```tsx
-<InputBox 
-  label="Resume Text" 
-  value={resumeText} 
-  onChange={setResumeText} 
-  rows={6} 
-/>
+```bash
+# Clone
+git clone https://github.com/loki128/resume-rebuilder-cursor.git
+cd resume-rebuilder-cursor
+
+# Install dependencies
+npm install
+
+# Add environment variables
+cp .env.example .env.local
+# Fill in your OpenRouter API key
+
+# Run dev server
+npm run dev
+# Open http://localhost:3000
 ```
 
-### OutputBox
-Displays enhancement results with summary bullets, skills, and keyword report.
-
-```tsx
-<OutputBox data={results} />
+**Required environment variable:**
+```env
+OPENROUTER_API_KEY=your_key_here
 ```
-
-### EnhanceButton
-Main call-to-action button that triggers the API request.
-
-### SectionTabs
-Navigation tabs for future multi-section layout.
-
-## Code Quality
-
-- **TypeScript:** Strict mode enabled
-- **Linting:** ESLint ready
-- **Formatting:** Tailwind best practices
-- **Structure:** Modular, reusable components
-
-## Git Commit History
-
-```
-Commits made in logical stages:
-1. Initial project setup (Next.js, TypeScript, Tailwind)
-2. Create component structure (InputBox, OutputBox, etc.)
-3. Implement homepage form UI
-4. Add API route with placeholder response
-5. Create utility libraries (keywordExtractor, resumeRewriter)
-6. Add configuration files and documentation
-```
-
-## Future Roadmap
-
-- [ ] LLM integration (OpenAI, Claude, Cohere)
-- [ ] Advanced NLP for keyword extraction
-- [ ] Resume parsing from PDF/DOCX
-- [ ] Fact-checking engine
-- [ ] User authentication
-- [ ] Resume history and versioning
-- [ ] Analytics and metrics
-- [ ] Export to multiple formats
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/improvement`)
-3. Make changes with clear commit messages
-4. Submit a pull request
-
-## License
-
-MIT
 
 ---
 
-**Note:** This is a foundation project. AI logic and advanced features will be implemented in subsequent phases.
+## UI Design System
+
+Built on a custom dark design system:
+
+- **Color palette** — Deep navy base with indigo, violet, and cyan accents
+- **Glassmorphism** — Blur and border cards for layered depth
+- **Ambient orbs** — Gradient background elements for visual richness
+- **Framer Motion** — Page transitions, card animations, spring-animated tabs, skeleton loaders
+- **Match Score Ring** — Animated SVG ring in the header, color-coded green/amber/red by score
+- **Collapsible Cards** — Each output section independently expandable with copy button
+
+---
+
+## Roadmap
+
+- [x] LLM integration via OpenRouter
+- [x] Rule-based fallback engine
+- [x] Keyword extraction and match report
+- [x] Dark premium UI with animations
+- [x] Match score visualization
+- [x] Copy-to-clipboard on all output sections
+- [x] Functional settings tab with animated toggles
+- [ ] PDF resume upload and parsing
+- [ ] Export enhanced resume as PDF
+- [ ] Save and compare multiple job applications
+- [ ] Chrome extension for job board integration
+- [ ] User accounts and resume history
+
+---
+
+## About the Developer
+
+Built by **[@loki128](https://github.com/loki128)** — an 18-year-old self-taught developer based in Jacksonville, FL.
+
+I build full-stack AI products using an agentic workflow with Claude Code, Cursor, and OpenRouter. This is my first shipped product — designed, built, deployed, and iterated on independently from scratch.
+
+Currently building a portfolio of AI-native tools. Open to internships, junior roles, and freelance projects.
+
+**Stack:** Next.js · TypeScript · React · Tailwind CSS · Framer Motion · LLM APIs · REST APIs · Vercel · Git · Prompt Engineering
+
+---
+
+## License
+
+MIT © 2026 loki128
