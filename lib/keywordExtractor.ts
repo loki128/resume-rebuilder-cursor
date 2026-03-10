@@ -97,9 +97,6 @@ export function keywordsReport({
   reference: string[],
   found: string[]
 }) {
-  const refSet = new Set(reference);
-  const foundSet = new Set(found);
-
   // Normalize for matching
   function norm(s: string) {
     return s.replace(/[.,]+$/g, '').toLowerCase();
