@@ -128,10 +128,6 @@ function startsWithVerb(s: string): boolean {
   const word = (s.trim().match(/^([A-Za-z]+)/)?.[1] || "").toLowerCase();
   return VERB_SET.has(word);
 }
-function pickVerb(idx: number): string {
-  const verb = ACTION_VERBS[idx % ACTION_VERBS.length];
-  return verb.charAt(0).toUpperCase() + verb.slice(1);
-}
 
 function removeWeakStarters(line: string): string {
   return line
