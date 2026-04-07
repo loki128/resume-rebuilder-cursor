@@ -11,7 +11,7 @@
 [![OpenRouter](https://img.shields.io/badge/OpenRouter_LLM-6366f1?style=for-the-badge&logo=openai&logoColor=white)](https://openrouter.ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-[**Live Demo**](https://resume-rebuilder-cursor.vercel.app) · [**Experimental Repo**](https://github.com/loki128/resume-rebuilder-experimental) · [**Report Bug**](https://github.com/loki128/resume-rebuilder-cursor/issues)
+[**Live Demo**](https://resume-rebuilder-cursor.vercel.app) · [**Report Bug**](https://github.com/loki128/resume-rebuilder-cursor/issues)
 
 </div>
 
@@ -122,11 +122,7 @@ resume-rebuilder/
     "keywordsUsed": ["agile", "roadmap"],
     "keywordsMissing": ["stakeholder"]
   },
-  "llmUsed": true,
-  "parsedMeta": {
-    "bulletsCount": 12,
-    "sectionsDetected": ["Experience", "Skills", "Education"]
-  }
+  "llmUsed": true
 }
 ```
 
@@ -135,71 +131,24 @@ resume-rebuilder/
 ## Running Locally
 
 ```bash
-# Clone
 git clone https://github.com/loki128/resume-rebuilder-cursor.git
 cd resume-rebuilder-cursor
-
-# Install dependencies
 npm install
-
-# Add environment variables
 cp .env.example .env.local
-# Fill in your OpenRouter API key
-
-# Run dev server
+# Add your OpenRouter API key
 npm run dev
-# Open http://localhost:3000
-```
-
-**Required environment variable:**
-```env
-OPENROUTER_API_KEY=your_key_here
 ```
 
 ---
 
-## UI Design System
+## Built By
 
-Built on a custom dark design system:
+**[Karim Lukita](https://lukita-portfolio.com)** — One-person product studio. I build full products solo — SaaS platforms, AI tools, trading bots, games. Design to deployment, one person, shipped fast.
 
-- **Color palette** — Deep navy base with indigo, violet, and cyan accents
-- **Glassmorphism** — Blur and border cards for layered depth
-- **Ambient orbs** — Gradient background elements for visual richness
-- **Framer Motion** — Page transitions, card animations, spring-animated tabs, skeleton loaders
-- **Match Score Ring** — Animated SVG ring in the header, color-coded green/amber/red by score
-- **Collapsible Cards** — Each output section independently expandable with copy button
-
----
-
-## Roadmap
-
-- [x] LLM integration via OpenRouter
-- [x] Rule-based fallback engine
-- [x] Keyword extraction and match report
-- [x] Dark premium UI with animations
-- [x] Match score visualization
-- [x] Copy-to-clipboard on all output sections
-- [x] Functional settings tab with animated toggles
-- [ ] PDF resume upload and parsing
-- [ ] Export enhanced resume as PDF
-- [ ] Save and compare multiple job applications
-- [ ] Chrome extension for job board integration
-- [ ] User accounts and resume history
-
----
-
-## About the Developer
-
-Built by **[@loki128](https://github.com/loki128)** — an 18-year-old self-taught developer based in Jacksonville, FL.
-
-I build full-stack AI products using an agentic workflow with Claude Code, Cursor, and OpenRouter. This is my first shipped product — designed, built, deployed, and iterated on independently from scratch.
-
-Currently building a portfolio of AI-native tools. Open to internships, junior roles, and freelance projects.
-
-**Stack:** Next.js · TypeScript · React · Tailwind CSS · Framer Motion · LLM APIs · REST APIs · Vercel · Git · Prompt Engineering
+[![Portfolio](https://img.shields.io/badge/lukita--portfolio.com-D4AF37?style=flat-square)](https://lukita-portfolio.com) [![GitHub](https://img.shields.io/badge/GitHub-loki128-181717?style=flat-square&logo=github)](https://github.com/loki128) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Karim_Lukita-0A66C2?style=flat-square&logo=linkedin)](https://linkedin.com/in/karim-lukita-0282263a9)
 
 ---
 
 ## License
 
-MIT © 2026 loki128
+MIT © 2026
